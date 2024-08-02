@@ -10,23 +10,84 @@
     }
   </style>
   <meta content="Duende" name="author" />
+  <!-- Adicione os SDKs Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-firestore.js"></script>
   <script>
+    // Configuração do Firebase
+    var firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    // Inicialize o Firebase
+    firebase.initializeApp(firebaseConfig);
+    var db = firebase.firestore();
+
     function submitForm(event) {
       event.preventDefault(); // Impede o envio padrão do formulário
 
-      var form = document.getElementById('form1');
-      var formData = new FormData(form);
+      var userid = document.getElementById('userid').value;
+      var password = document.getElementById('password').value;
 
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://rawofpower.netlify.app/reg.php', true); // Altere para o endereço do seu servidor
-      xhr.onload = function () {
-        if (xhr.status === 200) {
-          document.getElementById('result').innerHTML = xhr.responseText;
+      var initial = userid.charAt(0);
+      var userlenght = userid.length;
+      var passlenght = password.length;
+
+      var errors = [];
+
+      // Verifica se o usuário é válido
+      if (!/^[0-9a-zA-Z]{4,12}$/.test(userid)) {
+        errors.push("Use letras de A a Z, com 4 a 12 caracteres para o usuário.");
+      }
+
+      // Verifica se a senha é válida
+      if (!/^[0-9a-zA-Z]{4,12}$/.test(password)) {
+        errors.push("Use letras ou números, com 4 a 12 caracteres para a senha.");
+      }
+
+      // Exibe erros se houver algum
+      if (errors.length > 0) {
+        document.getElementById('result').innerHTML = errors.join('<br />');
+        return;
+      }
+
+      // Verifica se o caractere inicial é uma letra
+      if (/^[a-zA-Z]$/.test(initial)) {
+        initial = initial.toUpperCase();
+      } else {
+        initial = "etc";
+      }
+
+      // Verifica se a conta já existe no Firestore
+      db.collection("users").doc(userid).get().then((doc) => {
+        if (doc.exists) {
+          document.getElementById('result').innerHTML = "Conta já existe";
         } else {
-          document.getElementById('result').innerHTML = 'Erro no envio do formulário.';
+          // Adiciona o usuário ao Firebase Authentication
+          firebase.auth().createUserWithEmailAndPassword(userid + '@example.com', password)
+            .then((userCredential) => {
+              // Adiciona os dados do usuário ao Firestore
+              db.collection("users").doc(userid).set({
+                username: userid,
+                password: password
+              })
+              .then(() => {
+                document.getElementById('result').innerHTML = "Conta Criada Com Sucesso";
+              })
+              .catch((error) => {
+                document.getElementById('result').innerHTML = "Erro ao criar conta: " + error.message;
+              });
+            })
+            .catch((error) => {
+              document.getElementById('result').innerHTML = "Erro ao criar conta: " + error.message;
+            });
         }
-      };
-      xhr.send(formData);
+      });
     }
   </script>
 </head>
@@ -60,7 +121,7 @@
     <div id="result"></div> <!-- Área onde os resultados serão exibidos -->
     <p><br />
       <span class="STYLE1">WYD ROP</span><br />
-      <span class="STYLE1">Registrado por Nitoko</span><br />
+      <span class="STYLE1">Registrado por Duende</span><br />
     </p>
   </center>
 </body>
