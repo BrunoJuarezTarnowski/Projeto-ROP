@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt-br">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>Wyd ROP</title>
+  <style type="text/css">
+    .STYLE1 {
+      color: #FF0000;
+      font-weight: bold;
+    }
+  </style>
+  <meta content="Duende" name="author" />
+  <script>
+    function submitForm(event) {
+      event.preventDefault(); // Impede o envio padrão do formulário
+
+      var form = document.getElementById('form1');
+      var formData = new FormData(form);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://rawofpower.netlify.app/reg.php', true); // Altere para o endereço do seu servidor
+      xhr.onload = function () {
+        if (xhr.status === 200) {
+          document.getElementById('result').innerHTML = xhr.responseText;
+        } else {
+          document.getElementById('result').innerHTML = 'Erro no envio do formulário.';
+        }
+      };
+      xhr.send(formData);
+    }
+  </script>
+</head>
+<body>
+  <center>
+    <p>Beta - Raw Of Power</p>
+    <p>Site Oficial em Desenvolvimento</p>
+    <form id="form1" name="form1" method="post" align="center" onsubmit="submitForm(event)">
+      <table align="center" border="0" width="18%">
+        <tbody>
+          <tr>
+            <td>Usuário:</td>
+            <td><input name="userid" id="userid" type="text" /></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Senha:</td>
+            <td><input name="password" id="password" type="password" /></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="3">
+              <div align="center">
+                <input name="Submit" value="Confirmar" type="submit" />
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </form>
+    <div id="result"></div> <!-- Área onde os resultados serão exibidos -->
+    <p><br />
+      <span class="STYLE1">WYD ROP</span><br />
+      <span class="STYLE1">Registrado por Nitoko</span><br />
+    </p>
+  </center>
+</body>
+</html>
