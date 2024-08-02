@@ -9,7 +9,7 @@
       font-weight: bold;
     }
   </style>
-  <meta content="Duende" name="author" />
+  <meta content="Nitoko" name="author" />
   <!-- Adicione os SDKs Firebase -->
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.6.8/firebase-auth.js"></script>
@@ -17,12 +17,12 @@
   <script>
     // Configuração do Firebase
     var firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
+      apiKey: "AIzaSyBsZf_ANF_jiReZ_m6U48qA-koqyFOGQeM",
+      authDomain: "projeto-rop.firebaseapp.com",
+      projectId: "projeto-rop",
+      storageBucket: "projeto-rop.appspot.com",
+      messagingSenderId: "513653541130",
+      appId: "1:513653541130:web:a1bb74df68c5c996d2d2f3"
     };
     // Inicialize o Firebase
     firebase.initializeApp(firebaseConfig);
@@ -40,6 +40,8 @@
 
       var errors = [];
 
+      console.log("Iniciando validação do formulário...");
+
       // Verifica se o usuário é válido
       if (!/^[0-9a-zA-Z]{4,12}$/.test(userid)) {
         errors.push("Use letras de A a Z, com 4 a 12 caracteres para o usuário.");
@@ -53,6 +55,7 @@
       // Exibe erros se houver algum
       if (errors.length > 0) {
         document.getElementById('result').innerHTML = errors.join('<br />');
+        console.log("Erros de validação:", errors);
         return;
       }
 
@@ -63,14 +66,19 @@
         initial = "etc";
       }
 
+      console.log("Verificação inicial concluída. Verificando se a conta já existe...");
+
       // Verifica se a conta já existe no Firestore
       db.collection("users").doc(userid).get().then((doc) => {
         if (doc.exists) {
           document.getElementById('result').innerHTML = "Conta já existe";
+          console.log("Conta já existe:", userid);
         } else {
           // Adiciona o usuário ao Firebase Authentication
-          firebase.auth().createUserWithEmailAndPassword(userid + '@example.com', password)
+          firebase.auth().createUserWithEmailAndPassword(null)
             .then((userCredential) => {
+              console.log("Usuário criado com sucesso no Firebase Authentication.");
+
               // Adiciona os dados do usuário ao Firestore
               db.collection("users").doc(userid).set({
                 username: userid,
@@ -78,13 +86,16 @@
               })
               .then(() => {
                 document.getElementById('result').innerHTML = "Conta Criada Com Sucesso";
+                console.log("Conta criada com sucesso no Firestore.");
               })
               .catch((error) => {
                 document.getElementById('result').innerHTML = "Erro ao criar conta: " + error.message;
+                console.error("Erro ao criar conta no Firestore:", error);
               });
             })
             .catch((error) => {
               document.getElementById('result').innerHTML = "Erro ao criar conta: " + error.message;
+              console.error("Erro ao criar conta no Firebase Authentication:", error);
             });
         }
       });
@@ -121,7 +132,7 @@
     <div id="result"></div> <!-- Área onde os resultados serão exibidos -->
     <p><br />
       <span class="STYLE1">WYD ROP</span><br />
-      <span class="STYLE1">Registrado por Duende</span><br />
+      <span class="STYLE1">Registrado por Nitoko</span><br />
     </p>
   </center>
 </body>
